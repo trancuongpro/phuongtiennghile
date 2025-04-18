@@ -49,9 +49,9 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.removeEventListener('ended', () => {});
         // Dùng timeupdate để kiểm tra thời gian
         audio.addEventListener('timeupdate', () => {
-            if (audio.loop && audio.currentTime >= audio.duration - 0.25) { // Loop sớm 0.25 giây
+            if (audio.loop && audio.currentTime >= audio.duration - 0.1) { // Loop sớm 0.1 giây
                 audio.currentTime = 0; // Nhảy về đầu
-                audioプレイ().catch(err => console.error('Lỗi phát lại audio:', err));
+                audio.play().catch(err => console.error('Lỗi phát lại audio:', err));
             }
         });
     }
@@ -172,13 +172,47 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Đồng hồ thời gian thực
-    function updateClock() {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+    async function fetchVietnamTime() {
+        try {
+            const response = await fetch('http://worldtimeapi.org/api/timezone/Asia/Ho_Chi_Minh');
+            if (!response.ok) throw new Error('API response not ok');
+            const data = await response.json();
+            return new Date(data.datetime);
+        } catch (error) {
+            console.error('Lỗi lấy giờ từ API:', error);
+            return null;
+        }
     }
+
+    function formatTime(date) {
+        if (!date || isNaN(date)) return 'Giờ không hợp lệ';
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        const daysOfWeek = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+        const day = daysOfWeek[date.getDay()];
+        return `Thiết Kế Bởi Trần Cường ... Giờ Việt Nam: ${day} ${hours}:${minutes}:${seconds}`;
+    }
+
+    async function updateClock() {
+        let timeToDisplay;
+        if (navigator.onLine) {
+            const apiTime = await fetchVietnamTime();
+            if (apiTime && !isNaN(apiTime)) {
+                timeToDisplay = apiTime;
+            } else {
+                const systemTime = new Date();
+                timeToDisplay = !isNaN(systemTime) ? systemTime : null;
+            }
+        } else {
+            const systemTime = new Date();
+            timeToDisplay = !isNaN(systemTime) ? systemTime : null;
+        }
+        clockElement.textContent = formatTime(timeToDisplay);
+    }
+
+    // Cập nhật lần đầu
     updateClock();
+    // Cập nhật mỗi giây
     setInterval(updateClock, 1000);
 });
