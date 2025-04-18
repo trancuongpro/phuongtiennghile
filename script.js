@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.removeEventListener('ended', () => {});
         // Dùng timeupdate để kiểm tra thời gian
         audio.addEventListener('timeupdate', () => {
-            if (audio.loop && audio.currentTime >= audio.duration - 0.1) { // Loop sớm 0.1 giây
+            if (audio.loop && audio.currentTime >= audio.duration - 0.25) { // Loop sớm 0.25 giây
                 audio.currentTime = 0; // Nhảy về đầu
                 audioプレイ().catch(err => console.error('Lỗi phát lại audio:', err));
             }
