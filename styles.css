@@ -6,13 +6,13 @@
 
 body {
     background: url('Nen App.png') no-repeat center/cover;
-    background-size: 100% 100%; /* Phủ đầy, không méo */
-    background-attachment: fixed; /* Nền cố định khi cuộn */
-    min-height: 100vh; /* Đảm bảo chiều cao tối thiểu */
-    height: 100dvh; /* Hỗ trợ di động, bao gồm thanh điều hướng */
+    background-size: 100% 100%;
+    background-attachment: fixed;
+    min-height: 100vh;
+    height: 100dvh;
     font-family: Arial, sans-serif;
     color: #000;
-    overflow: hidden; /* Ngăn cuộn trên body */
+    overflow: hidden;
 }
 
 .container {
@@ -24,14 +24,12 @@ body {
     flex-direction: column;
 }
 
-/* Container cho phần cuộn */
 .scrollable-content {
     flex: 1;
-    overflow-y: auto; /* Cho phép cuộn */
-    -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
-/* Header: Button Chao.png */
 .header {
     width: 100%;
     display: flex;
@@ -49,11 +47,10 @@ body {
     cursor: pointer;
 }
 
-/* Danh sách button */
 .button-grid {
     display: flex;
     flex-direction: column;
-    gap: 50px; /* Khoảng cách 50px giữa các phần button */
+    gap: 50px;
     width: 100%;
     padding: 10px 0;
 }
@@ -61,15 +58,15 @@ body {
 .button-group {
     display: flex;
     flex-direction: column;
-    gap: 5px; /* Khoảng cách nhỏ giữa slider-row và button-row trong cùng một nhóm */
+    gap: 5px;
 }
 
 .button-row {
-    width: 90%; /* 100% - 5% lề trái - 5% lề phải */
-    margin: 0 auto; /* Canh giữa để cách 2 lề */
+    width: 90%;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
-    gap: 10%; /* Khoảng cách giữa 2 button là 10% */
+    gap: 10%;
 }
 
 .slider-row {
@@ -81,73 +78,74 @@ body {
 }
 
 .volume-slider {
-    width: 40%; /* Cùng chiều rộng với button */
+    width: 40%;
     cursor: pointer;
 }
 
 .chinh-button {
-    width: 40%; /* Mỗi button chiếm 40% */
-    height: 16vw; /* Tăng chiều cao để phù hợp tỷ lệ hình */
+    width: 40%;
+    height: 16vw;
     max-height: 80px;
-    background: url('Button Chinh.png') no-repeat center/cover; /* Phóng to hình để lấp đầy */
+    background: url('Button Chinh.png') no-repeat center/cover;
     border: none;
-    border-radius: 15px; /* Bo tròn các góc */
+    border-radius: 15px;
     cursor: pointer;
-    font-size: 2.8vw; /* Font chữ để chữ nằm gọn */
+    font-size: 2.8vw;
     font-weight: bold;
-    color: #000; /* Mặc định là đen */
+    color: #000;
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 12px; /* Đệm để chữ không sát viền */
+    padding: 12px;
     line-height: 1.1;
     white-space: normal;
+    /* Thêm các thuộc tính để ngăn chọn văn bản và menu ngữ cảnh */
+    user-select: none; /* Ngăn chọn văn bản */
+    -webkit-user-select: none; /* Hỗ trợ Safari */
+    -moz-user-select: none; /* Hỗ trợ Firefox */
+    -ms-user-select: none; /* Hỗ trợ Edge */
+    touch-action: manipulation; /* Ngăn hành vi mặc định như phóng to */
 }
 
-/* Hiệu ứng màu chữ */
 .chinh-button.playing {
-    color: red; /* Chữ đỏ khi phát */
-    animation: blink 1s infinite; /* Hiệu ứng chớp */
+    color: red;
+    animation: blink 1s infinite;
 }
 
 .chinh-button.paused {
-    color: blue; /* Chữ xanh dương khi pause */
+    color: blue;
 }
 
-/* Hiệu ứng chớp */
 @keyframes blink {
     0% { color: red; }
-    50% { color: #ff6666; } /* Màu đỏ nhạt */
+    50% { color: #ff6666; }
     100% { color: red; }
 }
 
-/* Hiệu ứng khi nhấn */
 .chinh-button:active {
     transform: scale(0.95);
 }
 
-/* Dòng chữ hướng dẫn */
 .instructions {
-    margin-top: 100px; /* Cách 2 button cuối 100px */
-    margin-bottom: 20px; /* Khoảng cách dưới cùng để dễ nhìn */
+    margin-top: 100px;
+    margin-bottom: 20px;
     width: 90%;
     margin-left: auto;
     margin-right: auto;
-    font-size: 3.5vw; /* Kích thước chữ tương tự footer trước đó */
-    color: white; /* Chữ trắng */
+    font-size: 3.5vw;
+    color: white;
     text-align: center;
-    line-height: 1.5; /* Dãn dòng để dễ đọc */
+    line-height: 1.5;
 }
 
-/* Hiển thị thời gian thực */
 .real-time-clock {
     margin: 10px 0;
     text-align: center;
     color: white;
     font-size: 16px;
     font-family: Arial, sans-serif;
-    background-color: rgba(0, 0, 0, 0.7); /* Nền tối mờ để chữ trắng dễ đọc */
+    background-color: rgba(0, 0, 0, 0.7);
     padding: 8px;
     border-radius: 5px;
     width: 90%;
