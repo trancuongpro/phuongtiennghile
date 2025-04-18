@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Phương Tiện Nghi Lễ</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Container để cuộn cả header và button-grid -->
+        <div class="scrollable-content">
+            <!-- Button Chao.png trên cùng -->
+            <div class="header">
+                <button class="chao-button"></button>
+            </div>
+
+            <!-- Danh sách 16 button (8 dòng, mỗi dòng 2 button) -->
+            <div class="button-grid">
+                <div class="button-group">
+                    <div class="slider-row">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-15">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-16">
+                    </div>
+                    <div class="button-row">
+                        <button class="chinh-button" data-audio-id="audio-15">Trống Tứ Liên Hồi</button>
+                        <button class="chinh-button" data-audio-id="audio-16">Pháp Loa Thỉnh</button>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="slider-row">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-1">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-2">
+                    </div>
+                    <div class="button-row">
+                        <button class="chinh-button" data-audio-id="audio-1">Ba Hồi Bát Nhã</button>
+                        <button class="chinh-button" data-audio-id="audio-2">Lưu Thủy Cung Nghinh</button>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="slider-row">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-3">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-4">
+                    </div>
+                    <div class="button-row">
+                        <button class="chinh-button" data-audio-id="audio-3">Ngâm Thơ Huế</button>
+                        <button class="chinh-button" data-audio-id="audio-4">Rao Đàn Bầu</button>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="slider-row">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-5">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-6">
+                    </div>
+                    <div class="button-row">
+                        <button class="chinh-button" data-audio-id="audio-5">Rao Đàn Nhị</button>
+                        <button class="chinh-button" data-audio-id="audio-6">Rao Tranh Sáo</button>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="slider-row">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-7">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-8">
+                    </div>
+                    <div class="button-row">
+                        <button class="chinh-button" data-audio-id="audio-7">Nhạc Thiền 1</button>
+                        <button class="chinh-button" data-audio-id="audio-8">Nhạc Thiền 2</button>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="slider-row">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-9">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-10">
+                    </div>
+                    <div class="button-row">
+                        <button class="chinh-button" data-audio-id="audio-9">Quốc Ca</button>
+                        <button class="chinh-button" data-audio-id="audio-10">Đạo Ca</button>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="slider-row">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-11">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-12">
+                    </div>
+                    <div class="button-row">
+                        <button class="chinh-button" data-audio-id="audio-11">Nhạc Trao Hoa</button>
+                        <button class="chinh-button" data-audio-id="audio-12">Chuông Mật Niệm</button>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <div class="slider-row">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-13">
+                        <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" data-audio-id="audio-14">
+                    </div>
+                    <div class="button-row">
+                        <button class="chinh-button" data-audio-id="audio-13">Nhạc Niệm Bổn Sư</button>
+                        <button class="chinh-button" data-audio-id="audio-14">Nhạc Thiền 3</button>
+                    </div>
+                </div>
+                <!-- Hiển thị thời gian thực -->
+                <div id="real-time-clock" class="real-time-clock"></div>
+            </div>
+
+            <!-- Dòng chữ hướng dẫn -->
+            <div class="instructions">
+                Hướng Dẫn Sử Dụng: Chọn Nội Dung Với Công Việc Nhấn Vào Nếu Âm Thanh Lớn Thì Trượt Thanh Volume Theo Cảm Nhận Mỗi Người, Khi Chữ Đỏ Chớp Là Đang Phát, Nhấn lần Nữa Pause Là Chữ Xanh Dương, Giữ Yên 1 Giây Là Stop .......... Chúc Trải Nghiệm Vui Vẻ Với Ứng Dụng Web Của Trần Cường
+            </div>
+        </div>
+
+        <!-- Audio elements -->
+        <audio id="audio-1" src="Ba Hoi Bat Nha.mp3"></audio>
+        <audio id="audio-2" src="Luu Thuy Cung Nghinh.mp3" loop></audio>
+        <audio id="audio-3" src="Ngam Tho Hue.mp3" loop></audio>
+        <audio id="audio-4" src="Rao Dan Bau.mp3" loop></audio>
+        <audio id="audio-5" src="Rao Dan Nhi.mp3" loop></audio>
+        <audio id="audio-6" src="Rao Tranh Sao.mp3" loop></audio>
+        <audio id="audio-7" src="Nhac Thien 1.mp3" loop></audio>
+        <audio id="audio-8" src="Nhac Thien 2.mp3" loop></audio>
+        <audio id="audio-9" src="Quoc Ca.mp3"></audio>
+        <audio id="audio-10" src="Dao Ca.mp3"></audio>
+        <audio id="audio-11" src="Nhac Trao Hoa.mp3" loop></audio>
+        <audio id="audio-12" src="Chuong Mat Niem.mp3"></audio>
+        <audio id="audio-13" src="Nhac Niem Bon Su.mp3" loop></audio>
+        <audio id="audio-14" src="Nhac Thien 3.mp3" loop></audio>
+        <audio id="audio-15" src="Trong Tu Thinh.mp3" loop></audio>
+        <audio id="audio-16-1" src="Phap Loa 1.mp3" loop></audio>
+        <audio id="audio-16-2" src="Phap Loa 2.mp3" loop></audio>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

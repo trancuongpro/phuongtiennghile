@@ -1,0 +1,156 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: url('Nen App.png') no-repeat center/cover;
+    background-size: 100% 100%; /* Phủ đầy, không méo */
+    background-attachment: fixed; /* Nền cố định khi cuộn */
+    min-height: 100vh; /* Đảm bảo chiều cao tối thiểu */
+    height: 100dvh; /* Hỗ trợ di động, bao gồm thanh điều hướng */
+    font-family: Arial, sans-serif;
+    color: #000;
+    overflow: hidden; /* Ngăn cuộn trên body */
+}
+
+.container {
+    width: 100%;
+    min-height: 100vh;
+    height: 100dvh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Container cho phần cuộn */
+.scrollable-content {
+    flex: 1;
+    overflow-y: auto; /* Cho phép cuộn */
+    -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
+}
+
+/* Header: Button Chao.png */
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.chao-button {
+    width: 120vw;
+    max-width: 1200px;
+    height: 50vw;
+    max-height: 150px;
+    background: url('Button Chao.png') no-repeat center/contain;
+    border: none;
+    cursor: pointer;
+}
+
+/* Danh sách button */
+.button-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 50px; /* Khoảng cách 50px giữa các phần button */
+    width: 100%;
+    padding: 10px 0;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Khoảng cách nhỏ giữa slider-row và button-row trong cùng một nhóm */
+}
+
+.button-row {
+    width: 90%; /* 100% - 5% lề trái - 5% lề phải */
+    margin: 0 auto; /* Canh giữa để cách 2 lề */
+    display: flex;
+    justify-content: space-between;
+    gap: 10%; /* Khoảng cách giữa 2 button là 10% */
+}
+
+.slider-row {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 10%;
+}
+
+.volume-slider {
+    width: 40%; /* Cùng chiều rộng với button */
+    cursor: pointer;
+}
+
+.chinh-button {
+    width: 40%; /* Mỗi button chiếm 40% */
+    height: 16vw; /* Tăng chiều cao để phù hợp tỷ lệ hình */
+    max-height: 80px;
+    background: url('Button Chinh.png') no-repeat center/cover; /* Phóng to hình để lấp đầy */
+    border: none;
+    border-radius: 15px; /* Bo tròn các góc */
+    cursor: pointer;
+    font-size: 2.8vw; /* Font chữ để chữ nằm gọn */
+    font-weight: bold;
+    color: #000; /* Mặc định là đen */
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px; /* Đệm để chữ không sát viền */
+    line-height: 1.1;
+    white-space: normal;
+}
+
+/* Hiệu ứng màu chữ */
+.chinh-button.playing {
+    color: red; /* Chữ đỏ khi phát */
+    animation: blink 1s infinite; /* Hiệu ứng chớp */
+}
+
+.chinh-button.paused {
+    color: blue; /* Chữ xanh dương khi pause */
+}
+
+/* Hiệu ứng chớp */
+@keyframes blink {
+    0% { color: red; }
+    50% { color: #ff6666; } /* Màu đỏ nhạt */
+    100% { color: red; }
+}
+
+/* Hiệu ứng khi nhấn */
+.chinh-button:active {
+    transform: scale(0.95);
+}
+
+/* Dòng chữ hướng dẫn */
+.instructions {
+    margin-top: 100px; /* Cách 2 button cuối 100px */
+    margin-bottom: 20px; /* Khoảng cách dưới cùng để dễ nhìn */
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 3.5vw; /* Kích thước chữ tương tự footer trước đó */
+    color: white; /* Chữ trắng */
+    text-align: center;
+    line-height: 1.5; /* Dãn dòng để dễ đọc */
+}
+
+/* Hiển thị thời gian thực */
+.real-time-clock {
+    margin: 10px 0;
+    text-align: center;
+    color: white;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    background-color: rgba(0, 0, 0, 0.7); /* Nền tối mờ để chữ trắng dễ đọc */
+    padding: 8px;
+    border-radius: 5px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+}
