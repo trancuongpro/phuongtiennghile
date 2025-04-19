@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!state.isPlaying) return;
 
         const currentAudio = isArray ? audio[0] : audio;
-        if (currentAudio.currentTime >= currentAudio.duration - 0.5) {
+        if (currentAudio.currentTime >= currentAudio.duration - 1) {
             // Kiểm tra audio phụ đã sẵn sàng
             const playWaitingAudio = () => {
                 if (isArray) {
@@ -182,6 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.addEventListener('timeupdate', checkTime);
     }
 };
+
+}
+
 
     // Danh sách audio từ script.js
     const audios = {
