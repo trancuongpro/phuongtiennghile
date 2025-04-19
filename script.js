@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theo dõi trạng thái mỗi audio
     const audioStates = {};
     Object.keys(audios).forEach(id => {
-        audioStates[id] = { isPlaying: false, lastClickTime: 0 };
+        audioStates[id] = { isPlaying: false, holdTimer: null };
     });
 
     // Xử lý loop sớm 1 giây cho tất cả audio
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.removeEventListener('ended', () => {});
         // Dùng timeupdate để kiểm tra thời gian
         audio.addEventListener('timeupdate', () => {
-            if (audio.loop && audio.currentTime >= audio.duration - 0.1) { // Loop sớm 0.1 giây
+            if (audio.loop && audio.currentTime >= audio.duration - 0.2) { // Loop sớm 0.2 giây
                 audio.currentTime = 0; // Nhảy về đầu
                 audio.play().catch(err => console.error('Lỗi phát lại audio:', err));
             }
@@ -71,30 +71,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Xử lý nhấn nút
+    // Hàm dừng audio
+    function stopAudio(audioId, button) {
+        const audio = audioId === 'audio-16' ? audios['audio-16'] : audios[audioId];
+        const state = audioStates[audioId];
+        if (Array.isArray(audio)) {
+            audio.forEach(a => {
+                a.pause();
+                a.currentTime = 0;
+            });
+        } else {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+        button.classList.remove('playing', 'paused');
+        state.isPlaying = false;
+    }
+
+    // Xử lý nhấn và giữ nút
     buttons.forEach(button => {
         const audioId = button.dataset.audioId;
         const audio = audioId === 'audio-16' ? audios['audio-16'] : audios[audioId];
+        const state = audioStates[audioId];
 
+        // Xử lý nhấn để play/pause
         button.addEventListener('click', () => {
-            const now = Date.now();
-            const state = audioStates[audioId];
-
-            // Nhấn lâu 1 giây để dừng
-            if (now - state.lastClickTime < 1000 && state.isPlaying) {
-                if (Array.isArray(audio)) {
-                    audio.forEach(a => {
-                        a.pause();
-                        a.currentTime = 0;
-                    });
-                } else {
-                    audio.pause();
-                    audio.currentTime = 0;
-                }
-                button.classList.remove('playing', 'paused');
-                state.isPlaying = false;
-            } else {
-                // Chuyển đổi play/pause
+            // Chỉ xử lý click nếu không phải đang trong quá trình giữ
+            if (!state.holdTimer) {
                 if (state.isPlaying) {
                     if (Array.isArray(audio)) {
                         audio.forEach(a => a.pause());
@@ -133,8 +136,51 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.isPlaying = true;
                 }
             }
+        });
 
-            state.lastClickTime = now;
+        // Xử lý giữ để dừng (desktop)
+        button.addEventListener('mousedown', () => {
+            state.holdTimer = setTimeout(() => {
+                stopAudio(audioId, button);
+                state.holdTimer = null;
+            }, 1000);
+        });
+
+        button.addEventListener('mouseup', () => {
+            if (state.holdTimer) {
+                clearTimeout(state.holdTimer);
+                state.holdTimer = null;
+            }
+        });
+
+        button.addEventListener('mouseleave', () => {
+            if (state.holdTimer) {
+                clearTimeout(state.holdTimer);
+                state.holdTimer = null;
+            }
+        });
+
+        // Xử lý giữ để dừng (di động)
+        button.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Ngăn hành vi mặc định như zoom
+            state.holdTimer = setTimeout(() => {
+                stopAudio(audioId, button);
+                state.holdTimer = null;
+            }, 1000);
+        });
+
+        button.addEventListener('touchend', () => {
+            if (state.holdTimer) {
+                clearTimeout(state.holdTimer);
+                state.holdTimer = null;
+            }
+        });
+
+        button.addEventListener('touchcancel', () => {
+            if (state.holdTimer) {
+                clearTimeout(state.holdTimer);
+                state.holdTimer = null;
+            }
         });
     });
 
