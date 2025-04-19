@@ -83,58 +83,105 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Theo dõi audio chính để chuyển đổi
         const monitorAudio = (audio, isArray = false) => {
-            const checkTime = () => {
-                if (!state.isPlaying) return;
+    const checkTime = () => {
+        if (!state.isPlaying) return;
 
-                const currentAudio = isArray ? audio[0] : audio; // Dùng audio đầu tiên nếu là array
-                if (currentAudio.currentTime >= currentAudio.duration - 0.5) {
-                    // Phát audio phụ từ đầu
-                    if (isArray) {
-                        state.waitingAudio.forEach(w => {
-                            w.volume = initialVolume;
-                            w.currentTime = 0;
-                            w.play().catch(err => console.error('Lỗi phát audio phụ:', err));
+        const currentAudio = isArray ? audio[0] : audio;
+        if (currentAudio.currentTime >= currentAudio.duration - 0.5) {
+            // Kiểm tra audio phụ đã sẵn sàng
+            const playWaitingAudio = () => {
+                if (isArray) {
+                    state.waitingAudio.forEach(w => {
+                        w.volume = initialVolume;
+                        w.currentTime = 0;
+                        w.play().catch(err => {
+                            console.error('Lỗi phát audio phụ:', err);
+                            if (err.name === 'NotAllowedError') {
+                                // Đợi tương tác người dùng
+                                const button = document.querySelector(`button[data-audio-id="${audioId}"]`);
+                                const onUserInteraction = () => {
+                                    w.play().catch(e => console.error('Lỗi phát audio phụ sau tương tác:', e));
+                                    button.removeEventListener('click', onUserInteraction);
+                                };
+                                button.addEventListener('click', onUserInteraction, { once: true });
+                            }
                         });
-                    } else {
-                        state.waitingAudio.volume = initialVolume;
-                        state.waitingAudio.currentTime = 0;
-                        state.waitingAudio.play().catch(err => console.error('Lỗi phát audio phụ:', err));
-                    }
-
-                    // Chờ 0.5 giây để audio chính hoàn thành, rồi hoán đổi
-                    setTimeout(() => {
-                        if (!state.isPlaying) return; // Kiểm tra trạng thái để tránh hoán đổi khi đã pause/stop
-                        const temp = state.activeAudio;
-                        state.activeAudio = state.waitingAudio;
-                        state.waitingAudio = temp;
-
-                        // Reset audio phụ (bây giờ là waiting)
-                        if (isArray) {
-                            state.waitingAudio.forEach(w => {
-                                w.volume = 0;
-                                w.pause();
-                                w.currentTime = 0;
-                            });
-                        } else {
-                            state.waitingAudio.volume = 0;
-                            state.waitingAudio.pause();
-                            state.waitingAudio.currentTime = 0;
+                    });
+                } else {
+                    state.waitingAudio.volume = initialVolume;
+                    state.waitingAudio.currentTime = 0;
+                    state.waitingAudio.play().catch(err => {
+                        console.error('Lỗi phát audio phụ:', err);
+                        if (err.name === 'NotAllowedError') {
+                            const button = document.querySelector(`button[data-audio-id="${audioId}"]`);
+                            const onUserInteraction = () => {
+                                state.waitingAudio.play().catch(e => console.error('Lỗi phát audio phụ sau tương tác:', e));
+                                button.removeEventListener('click', onUserInteraction);
+                            };
+                            button.addEventListener('click', onUserInteraction, { once: true });
                         }
-                    }, 100);
+                    });
                 }
             };
 
+            // Đợi audio phụ sẵn sàng
             if (isArray) {
-                audio.forEach(a => {
-                    a.addEventListener('timeupdate', checkTime);
-                });
+                Promise.all(state.waitingAudio.map(w => new Promise(resolve => {
+                    if (w.readyState >= 3) resolve();
+                    else w.addEventListener('canplaythrough', resolve, { once: true });
+                }))).then(playWaitingAudio);
             } else {
-                audio.addEventListener('timeupdate', checkTime);
+                if (state.waitingAudio.readyState >= 3) {
+                    playWaitingAudio();
+                } else {
+                    state.waitingAudio.addEventListener('canplaythrough', playWaitingAudio, { once: true });
+                }
             }
-        };
 
-        monitorAudio(state.activeAudio, Array.isArray(state.activeAudio));
+            // Hoán đổi sau 100ms
+            setTimeout(() => {
+                if (!state.isPlaying) return;
+                const temp = state.activeAudio;
+                state.activeAudio = state.waitingAudio;
+                state.waitingAudio = temp;
+
+                // Reset audio phụ
+                if (isArray) {
+                    state.waitingAudio.forEach(w => {
+                        w.volume = 0;
+                        w.pause();
+                        w.currentTime = 0;
+                        w.load(); // Tải lại để đảm bảo sẵn sàng
+                    });
+                } else {
+                    state.waitingAudio.volume = 0;
+                    state.waitingAudio.pause();
+                    state.waitingAudio.currentTime = 0;
+                    state.waitingAudio.load(); // Tải lại để đảm bảo sẵn sàng
+                }
+
+                // Gắn lại sự kiện timeupdate cho activeAudio mới
+                if (isArray) {
+                    state.activeAudio.forEach(a => {
+                        a.removeEventListener('timeupdate', checkTime); // Xóa sự kiện cũ
+                        a.addEventListener('timeupdate', checkTime); // Gắn lại
+                    });
+                } else {
+                    state.activeAudio.removeEventListener('timeupdate', checkTime);
+                    state.activeAudio.addEventListener('timeupdate', checkTime);
+                }
+            }, 100);
+        }
+    };
+
+    if (isArray) {
+        audio.forEach(a => {
+            a.addEventListener('timeupdate', checkTime);
+        });
+    } else {
+        audio.addEventListener('timeupdate', checkTime);
     }
+};
 
     // Danh sách audio từ script.js
     const audios = {
