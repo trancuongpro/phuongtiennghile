@@ -28,6 +28,7 @@ body {
     flex: 1;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    padding-bottom: 50vh; /* Thêm không gian để cuộn, cho phép .instructions lên giữa màn hình */
 }
 
 .header {
@@ -128,7 +129,7 @@ body {
 }
 
 .instructions {
-    margin-top: 50px;
+    margin-top: 20px;
     margin-bottom: 20px;
     width: 90%;
     margin-left: auto;

@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const buttons = document.querySelectorAll('.chinh-button');
     const volumeSliders = document.querySelectorAll('.volume-slider');
     const chaoButton = document.querySelector('.chao-button');
-    const clockElement = document.getElementById('real-time-clock');
 
     // Danh sách các audio
     const audios = {
@@ -31,29 +30,49 @@ document.addEventListener('DOMContentLoaded', () => {
     // Theo dõi trạng thái mỗi audio
     const audioStates = {};
     Object.keys(audios).forEach(id => {
-        audioStates[id] = { isPlaying: false, holdTimer: null };
+        audioStates[id] = { isPlaying: false, pressStartTime: 0, isHolding: false };
     });
 
-    // Xử lý loop sớm 1 giây cho tất cả audio
+    // Xử lý loop và không loop cho tất cả audio
     Object.entries(audios).forEach(([id, audio]) => {
         if (Array.isArray(audio)) {
-            audio.forEach(a => setupSeamlessLoop(a));
+            audio.forEach(a => setupAudio(a, id));
         } else {
-            setupSeamlessLoop(audio);
+            setupAudio(audio, id);
         }
     });
 
-    function setupSeamlessLoop(audio) {
+    function setupAudio(audio, audioId) {
         audio.preload = 'auto'; // Tải trước file MP3
-        // Tắt sự kiện ended để tránh xung đột
+        // Xóa sự kiện ended cũ để tránh xung đột
         audio.removeEventListener('ended', () => {});
-        // Dùng timeupdate để kiểm tra thời gian
-        audio.addEventListener('timeupdate', () => {
-            if (audio.loop && audio.currentTime >= audio.duration - 0.2) { // Loop sớm 0.2 giây
-                audio.currentTime = 0; // Nhảy về đầu
-                audio.play().catch(err => console.error('Lỗi phát lại audio:', err));
-            }
-        });
+
+        if (audio.loop) {
+            // Xử lý loop cho audio có thuộc tính loop
+            audio.addEventListener('timeupdate', () => {
+                if (audio.currentTime >= audio.duration - 0.2) { // Loop sớm 0.2 giây
+                    audio.currentTime = 0; // Nhảy về đầu
+                    audio.play().catch(err => console.error('Lỗi phát lại audio:', err));
+                }
+            });
+        } else {
+            // Xử lý audio không loop: khi kết thúc, trở về trạng thái stop
+            audio.addEventListener('ended', () => {
+                console.log(`Audio ${audioId} ended, resetting to stop state`); // Debug log
+                const state = audioStates[audioId];
+                const button = document.querySelector(`button[data-audio-id="${audioId}"]`);
+                audio.pause();
+                audio.currentTime = 0;
+                state.isPlaying = false;
+                state.isHolding = false;
+                if (button) {
+                    console.log(`Resetting button for ${audioId}`); // Debug log
+                    button.classList.remove('playing', 'paused');
+                } else {
+                    console.warn(`Button for ${audioId} not found`); // Debug log
+                }
+            });
+        }
     }
 
     // Điều khiển volume
@@ -71,34 +90,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Hàm dừng audio
-    function stopAudio(audioId, button) {
-        const audio = audioId === 'audio-16' ? audios['audio-16'] : audios[audioId];
-        const state = audioStates[audioId];
-        if (Array.isArray(audio)) {
-            audio.forEach(a => {
-                a.pause();
-                a.currentTime = 0;
-            });
-        } else {
-            audio.pause();
-            audio.currentTime = 0;
-        }
-        button.classList.remove('playing', 'paused');
-        state.isPlaying = false;
-    }
-
-    // Xử lý nhấn và giữ nút
+    // Xử lý nhấn giữ nút
     buttons.forEach(button => {
         const audioId = button.dataset.audioId;
         const audio = audioId === 'audio-16' ? audios['audio-16'] : audios[audioId];
-        const state = audioStates[audioId];
+        let holdTimeout;
 
-        // Xử lý nhấn để play/pause
-        button.addEventListener('click', () => {
-            // Chỉ xử lý click nếu không phải đang trong quá trình giữ
-            if (!state.holdTimer) {
+        // Hàm xử lý bắt đầu nhấn (chuột hoặc cảm ứng)
+        const startPress = (e) => {
+            e.preventDefault(); // Ngăn hành vi mặc định
+            const state = audioStates[audioId];
+            state.pressStartTime = Date.now();
+            state.isHolding = true;
+
+            // Đặt timeout để kiểm tra giữ 1 giây
+            holdTimeout = setTimeout(() => {
+                if (state.isHolding) {
+                    console.log(`Stop audio ${audioId} by hold`); // Debug log
+                    if (Array.isArray(audio)) {
+                        audio.forEach(a => {
+                            a.pause();
+                            a.currentTime = 0;
+                        });
+                    } else {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    }
+                    button.classList.remove('playing', 'paused');
+                    state.isPlaying = false;
+                    state.isHolding = false;
+                }
+            }, 1000);
+        };
+
+        // Hàm xử lý thả nút (chuột hoặc cảm ứng)
+        const endPress = (e) => {
+            e.preventDefault(); // Ngăn hành vi mặc định
+            const state = audioStates[audioId];
+            const pressDuration = Date.now() - state.pressStartTime;
+
+            clearTimeout(holdTimeout);
+
+            // Nếu nhấn nhanh (dưới 1 giây), xử lý play/pause
+            if (pressDuration < 1000 && state.isHolding) {
                 if (state.isPlaying) {
+                    console.log(`Pause audio ${audioId}`); // Debug log
                     if (Array.isArray(audio)) {
                         audio.forEach(a => a.pause());
                     } else {
@@ -108,23 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     button.classList.add('paused');
                     state.isPlaying = false;
                 } else {
-                    // Dừng tất cả audio khác
-                    Object.entries(audios).forEach(([id, a]) => {
-                        if (id !== audioId) {
-                            if (Array.isArray(a)) {
-                                a.forEach(au => {
-                                    au.pause();
-                                    au.currentTime = 0;
-                                });
-                            } else {
-                                a.pause();
-                                a.currentTime = 0;
-                            }
-                            audioStates[id].isPlaying = false;
-                            document.querySelector(`[data-audio-id="${id}"]`)?.classList.remove('playing', 'paused');
-                        }
-                    });
-
+                    console.log(`Play audio ${audioId}`); // Debug log
                     // Phát audio hiện tại
                     if (Array.isArray(audio)) {
                         audio.forEach(a => a.play().catch(err => console.error('Lỗi phát audio:', err)));
@@ -136,52 +156,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.isPlaying = true;
                 }
             }
-        });
+            state.isHolding = false;
+        };
 
-        // Xử lý giữ để dừng (desktop)
-        button.addEventListener('mousedown', () => {
-            state.holdTimer = setTimeout(() => {
-                stopAudio(audioId, button);
-                state.holdTimer = null;
-            }, 1000);
-        });
+        // Sự kiện cho chuột
+        button.addEventListener('mousedown', startPress);
+        button.addEventListener('mouseup', endPress);
 
-        button.addEventListener('mouseup', () => {
-            if (state.holdTimer) {
-                clearTimeout(state.holdTimer);
-                state.holdTimer = null;
-            }
-        });
+        // Sự kiện cho cảm ứng
+        button.addEventListener('touchstart', startPress);
+        button.addEventListener('touchend', endPress);
 
-        button.addEventListener('mouseleave', () => {
-            if (state.holdTimer) {
-                clearTimeout(state.holdTimer);
-                state.holdTimer = null;
-            }
-        });
-
-        // Xử lý giữ để dừng (di động)
-        button.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Ngăn hành vi mặc định như zoom
-            state.holdTimer = setTimeout(() => {
-                stopAudio(audioId, button);
-                state.holdTimer = null;
-            }, 1000);
-        });
-
-        button.addEventListener('touchend', () => {
-            if (state.holdTimer) {
-                clearTimeout(state.holdTimer);
-                state.holdTimer = null;
-            }
-        });
-
-        button.addEventListener('touchcancel', () => {
-            if (state.holdTimer) {
-                clearTimeout(state.holdTimer);
-                state.holdTimer = null;
-            }
-        });
+        // Ngăn sự kiện touchmove gây nhiễu
+        button.addEventListener('touchmove', e => e.preventDefault());
     });
 
     // Nút Chao (phát audio-9: Quốc Ca)
@@ -191,74 +178,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const state = audioStates[audioId];
 
         if (state.isPlaying) {
+            console.log(`Stop audio-9 by Chao button`); // Debug log
             audio.pause();
             audio.currentTime = 0;
             state.isPlaying = false;
         } else {
-            // Dừng tất cả audio khác
-            Object.entries(audios).forEach(([id, a]) => {
-                if (id !== audioId) {
-                    if (Array.isArray(a)) {
-                        a.forEach(au => {
-                            au.pause();
-                            au.currentTime = 0;
-                        });
-                    } else {
-                        a.pause();
-                        a.currentTime = 0;
-                    }
-                    audioStates[id].isPlaying = false;
-                    document.querySelector(`[data-audio-id="${id}"]`)?.classList.remove('playing', 'paused');
-                }
-            });
-
+            console.log(`Play audio-9 by Chao button`); // Debug log
             audio.play().catch(err => console.error('Lỗi phát audio:', err));
             state.isPlaying = true;
         }
     });
-
-    // Đồng hồ thời gian thực
-    async function fetchVietnamTime() {
-        try {
-            const response = await fetch('http://worldtimeapi.org/api/timezone/Asia/Ho_Chi_Minh');
-            if (!response.ok) throw new Error('API response not ok');
-            const data = await response.json();
-            return new Date(data.datetime);
-        } catch (error) {
-            console.error('Lỗi lấy giờ từ API:', error);
-            return null;
-        }
-    }
-
-    function formatTime(date) {
-        if (!date || isNaN(date)) return 'Giờ không hợp lệ';
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-        const seconds = String(date.getSeconds()).padStart(2, '0');
-        const daysOfWeek = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-        const day = daysOfWeek[date.getDay()];
-        return `Thiết Kế Bởi Trần Cường ... Giờ Việt Nam: ${day} ${hours}:${minutes}:${seconds}`;
-    }
-
-    async function updateClock() {
-        let timeToDisplay;
-        if (navigator.onLine) {
-            const apiTime = await fetchVietnamTime();
-            if (apiTime && !isNaN(apiTime)) {
-                timeToDisplay = apiTime;
-            } else {
-                const systemTime = new Date();
-                timeToDisplay = !isNaN(systemTime) ? systemTime : null;
-            }
-        } else {
-            const systemTime = new Date();
-            timeToDisplay = !isNaN(systemTime) ? systemTime : null;
-        }
-        clockElement.textContent = formatTime(timeToDisplay);
-    }
-
-    // Cập nhật lần đầu
-    updateClock();
-    // Cập nhật mỗi giây
-    setInterval(updateClock, 1000);
 });

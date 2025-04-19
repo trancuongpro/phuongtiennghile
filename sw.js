@@ -1,10 +1,11 @@
-const CACHE_NAME = 'audio-app-cache';
+const CACHE_NAME = `audio-app-cache-${Date.now()}`;
 const urlsToCache = [
     '/',
     '/index.html',
     '/content.html',
     '/styles.css',
     '/script.js',
+    '/clock.js', // Thêm clock.js
     '/favicon.png',
     '/Nen App.png',
     '/Button Chao.png',
@@ -32,56 +33,57 @@ self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log('Đã mở cache');
+                console.log('Opened cache');
                 return cache.addAll(urlsToCache);
             })
     );
-    // Kích hoạt Service Worker mới ngay lập tức
+    // Kích hoạt ngay lập tức để cập nhật
     self.skipWaiting();
 });
 
 self.addEventListener('fetch', event => {
     // Bỏ qua các yêu cầu tới Cloudflare
     if (event.request.url.includes('/cdn-cgi/')) {
-        event.respondWith(fetch(event.request));
-        return;
+        return event.respondWith(fetch(event.request));
     }
 
     event.respondWith(
-        // Thử tải từ mạng trước
+        // Luôn thử lấy từ mạng trước
         fetch(event.request)
             .then(networkResponse => {
-                // Nếu tải thành công, cập nhật cache
-                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-                    const responseToCache = networkResponse.clone();
-                    caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, responseToCache);
-                    });
+                // Kiểm tra response hợp lệ
+                if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+                    return networkResponse;
                 }
+                // Lưu response mới vào cache
+                const responseToCache = networkResponse.clone();
+                caches.open(CACHE_NAME).then(cache => {
+                    cache.put(event.request, responseToCache);
+                });
                 return networkResponse;
             })
             .catch(() => {
                 // Nếu không có mạng, lấy từ cache
-                return caches.match(event.request).then(cachedResponse => {
-                    return cachedResponse || new Response('Không có mạng và không có phiên bản cache', { status: 503 });
-                });
+                return caches.match(event.request)
+                    .then(cachedResponse => {
+                        return cachedResponse || new Response('Offline and no cached resource available', { status: 503 });
+                    });
             })
     );
 });
 
 self.addEventListener('activate', event => {
-    const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.map(cacheName => {
-                    if (!cacheWhitelist.includes(cacheName)) {
+                    if (cacheName !== CACHE_NAME) {
                         return caches.delete(cacheName);
                     }
                 })
             );
         })
     );
-    // Kiểm soát các tab ngay lập tức
+    // Đảm bảo client sử dụng service worker mới ngay lập tức
     self.clients.claim();
 });
