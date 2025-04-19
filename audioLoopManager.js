@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!state.isPlaying) return;
 
                 const currentAudio = isArray ? audio[0] : audio; // Dùng audio đầu tiên nếu là array
-                if (currentAudio.currentTime >= currentAudio.duration - 0.1) {
+                if (currentAudio.currentTime >= currentAudio.duration - 0.5) {
                     // Phát audio phụ từ đầu
                     if (isArray) {
                         state.waitingAudio.forEach(w => {
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         state.waitingAudio.play().catch(err => console.error('Lỗi phát audio phụ:', err));
                     }
 
-                    // Chờ 0.1 giây để audio chính hoàn thành, rồi hoán đổi
+                    // Chờ 0.5 giây để audio chính hoàn thành, rồi hoán đổi
                     setTimeout(() => {
                         if (!state.isPlaying) return; // Kiểm tra trạng thái để tránh hoán đổi khi đã pause/stop
                         const temp = state.activeAudio;
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             state.waitingAudio.pause();
                             state.waitingAudio.currentTime = 0;
                         }
-                    }, 500);
+                    }, 100);
                 }
             };
 
