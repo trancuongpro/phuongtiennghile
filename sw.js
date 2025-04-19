@@ -5,7 +5,8 @@ const urlsToCache = [
     '/content.html',
     '/styles.css',
     '/script.js',
-    '/clock.js', // Thêm clock.js
+    '/audioLoopManager.js',
+    '/clock.js',
     '/favicon.png',
     '/Nen App.png',
     '/Button Chao.png',
@@ -42,6 +43,10 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
+    // Bỏ qua các yêu cầu không phải http hoặc https
+    if (!event.request.url.startsWith('http')) {
+        return;
+    }
     // Bỏ qua các yêu cầu tới Cloudflare
     if (event.request.url.includes('/cdn-cgi/')) {
         return event.respondWith(fetch(event.request));
