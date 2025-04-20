@@ -91,20 +91,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.waitingAudio.addEventListener('canplaythrough', playWaitingAudio, { once: true });
                 }
 
-                setTimeout(() => {
-                    if (!state.isPlaying) return;
-                    const temp = state.activeAudio;
-                    state.activeAudio = state.waitingAudio;
-                    state.waitingAudio = temp;
+                // Chuyển đổi active và waiting audio
+                const temp = state.activeAudio;
+                state.activeAudio = state.waitingAudio;
+                state.waitingAudio = temp;
 
-                    state.waitingAudio.volume = 0;
-                    state.waitingAudio.pause();
-                    state.waitingAudio.currentTime = 0;
-                    state.waitingAudio.load();
+                // Thiết lập lại waitingAudio
+                state.waitingAudio.volume = 0;
+                state.waitingAudio.pause();
+                state.waitingAudio.currentTime = 0;
+                state.waitingAudio.load();
 
-                    state.activeAudio.removeEventListener('timeupdate', checkTime);
-                    state.activeAudio.addEventListener('timeupdate', checkTime);
-                }, 100);
+                // Gắn lại sự kiện timeupdate cho activeAudio mới
+                state.activeAudio.removeEventListener('timeupdate', checkTime);
+                state.activeAudio.addEventListener('timeupdate', checkTime);
             }
         };
 
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (state.isHolding) {
                         stopAudio(song.id);
                     }
-                }, 1000);
+                }, 200);
             }
         };
 
