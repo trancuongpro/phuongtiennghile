@@ -6,17 +6,14 @@
     <title>Phương Tiện Nghi Lễ</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <!-- Container để cuộn cả header và button-grid -->
         <div class="scrollable-content">
-            <!-- Button Chao.png trên cùng -->
             <div class="header">
                 <button class="chao-button"></button>
             </div>
-
-            <!-- Danh sách 16 button (8 dòng, mỗi dòng 2 button) -->
             <div class="button-grid">
                 <div class="button-group">
                     <div class="slider-row">
@@ -98,17 +95,34 @@
                         <button class="chinh-button" data-audio-id="audio-14">Nhạc Thiền 3</button>
                     </div>
                 </div>
-                <!-- Hiển thị thời gian thực -->
+                <div class="music-control-row">
+                    <span class="music-title">Nhạc Thiền Ngoại Cảnh</span>
+                    <div class="music-controls">
+                        <button class="music-control-button play-pause" data-audio-id="audio-new-1">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="music-control-button stop" data-audio-id="audio-new-1">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="music-control-row">
+                    <span class="music-title">Guzheng Nam Mô A Di Phật</span>
+                    <div class="music-controls">
+                        <button class="music-control-button play-pause" data-audio-id="audio-new-2">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="music-control-button stop" data-audio-id="audio-new-2">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                    </div>
+                </div>
                 <div id="real-time-clock" class="real-time-clock"></div>
             </div>
-
-            <!-- Dòng chữ hướng dẫn -->
             <div class="instructions">
                 Hướng Dẫn Sử Dụng: Chọn Nội Dung Với Công Việc Nhấn Vào Nếu Âm Thanh Lớn Thì Trượt Thanh Volume Theo Cảm Nhận Mỗi Người, Khi Chữ Đỏ Chớp Là Đang Phát, Nhấn lần Nữa Pause Là Chữ Xanh Dương, Giữ Yên 1 Giây Là Stop .......... Chúc Trải Nghiệm Vui Vẻ Với Ứng Dụng Web Của Trần Cường
             </div>
         </div>
-
-        <!-- Audio elements -->
         <audio id="audio-1" src="Ba Hoi Bat Nha.mp3" preload="auto"></audio>
         <audio id="audio-2" src="Luu Thuy Cung Nghinh.mp3" loop preload="auto"></audio>
         <audio id="audio-3" src="Ngam Tho Hue.mp3" loop preload="auto"></audio>
@@ -126,8 +140,9 @@
         <audio id="audio-15" src="Trong Tu Thinh.mp3" loop preload="auto"></audio>
         <audio id="audio-16-1" src="Phap Loa 1.mp3" loop preload="auto"></audio>
         <audio id="audio-16-2" src="Phap Loa 2.mp3" loop preload="auto"></audio>
+        <audio id="audio-new-1" src="Nhac Dung Com.mp3" preload="auto"></audio>
+        <audio id="audio-new-2" src="guzheng nam mo a di da phat.mp3" preload="auto"></audio>
     </div>
-
     <script>
         if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
             window.addEventListener('load', () => {
@@ -144,5 +159,6 @@
     <script src="script.js"></script>
     <script src="audioLoopManager.js"></script>
     <script src="clock.js"></script>
+    <script src="nhacmoi.js"></script>
 </body>
 </html>

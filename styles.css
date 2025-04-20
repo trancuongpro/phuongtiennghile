@@ -51,7 +51,7 @@ body {
 .button-grid {
     display: flex;
     flex-direction: column;
-    gap: 50px;
+    gap: 40px;
     width: 100%;
     padding: 10px 0;
 }
@@ -101,12 +101,11 @@ body {
     padding: 12px;
     line-height: 1.1;
     white-space: normal;
-    /* Thêm các thuộc tính để ngăn chọn văn bản và menu ngữ cảnh */
-    user-select: none; /* Ngăn chọn văn bản */
-    -webkit-user-select: none; /* Hỗ trợ Safari */
-    -moz-user-select: none; /* Hỗ trợ Firefox */
-    -ms-user-select: none; /* Hỗ trợ Edge */
-    touch-action: manipulation; /* Ngăn hành vi mặc định như phóng to */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    touch-action: manipulation;
 }
 
 .chinh-button.playing {
@@ -152,4 +151,52 @@ body {
     width: 90%;
     margin-left: auto;
     margin-right: auto;
+}
+
+/* Style cho music-control-row */
+.music-control-row {
+    width: 90%;
+    margin: 2px auto !important; /* Giảm margin để sát nhau */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Vô hiệu hóa gap của button-grid và đặt khoảng cách nhỏ cho music-control-row liền kề */
+.button-grid .music-control-row + .music-control-row {
+    margin-top: -10px !important; /* Tổng khoảng cách = 2px (margin-bottom) + 2px (margin-top) = 4px */
+	}
+
+/* Đảm bảo gap của button-grid không ảnh hưởng đến music-control-row */
+.button-grid > .music-control-row {
+    margin-bottom: -10px !important;
+	}
+
+.music-title {
+    font-size: 20px;
+    color: #00f;
+	font-weight: bold;
+}
+
+.music-controls {
+    display: flex;
+    gap: 25px;
+}
+
+.music-control-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #fff;
+    padding: 5px;
+    transition: color 0.2s;
+	}
+
+.music-control-button:hover {
+    color: #00f;
+}
+
+.music-control-button.playing .fa-play::before {
+    content: "\f28b"; /* Icon pause */
 }

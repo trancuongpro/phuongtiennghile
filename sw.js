@@ -7,6 +7,7 @@ const urlsToCache = [
     '/script.js',
     '/audioLoopManager.js',
     '/clock.js',
+    '/nhacmoi.js',
     '/favicon.png',
     '/Nen App.png',
     '/Button Chao.png',
@@ -27,7 +28,9 @@ const urlsToCache = [
     '/Nhac Thien 3.mp3',
     '/Trong Tu Thinh.mp3',
     '/Phap Loa 1.mp3',
-    '/Phap Loa 2.mp3'
+    '/Phap Loa 2.mp3',
+    '/Nhac Dung Com.mp3',
+    '/guzheng nam mo a di da phat.mp3'
 ];
 
 self.addEventListener('install', event => {
@@ -38,29 +41,23 @@ self.addEventListener('install', event => {
                 return cache.addAll(urlsToCache);
             })
     );
-    // Kích hoạt ngay lập tức để cập nhật
     self.skipWaiting();
 });
 
 self.addEventListener('fetch', event => {
-    // Bỏ qua các yêu cầu không phải http hoặc https
     if (!event.request.url.startsWith('http')) {
         return;
     }
-    // Bỏ qua các yêu cầu tới Cloudflare
     if (event.request.url.includes('/cdn-cgi/')) {
         return event.respondWith(fetch(event.request));
     }
 
     event.respondWith(
-        // Luôn thử lấy từ mạng trước
         fetch(event.request)
             .then(networkResponse => {
-                // Kiểm tra response hợp lệ
                 if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
                     return networkResponse;
                 }
-                // Lưu response mới vào cache
                 const responseToCache = networkResponse.clone();
                 caches.open(CACHE_NAME).then(cache => {
                     cache.put(event.request, responseToCache);
@@ -68,7 +65,6 @@ self.addEventListener('fetch', event => {
                 return networkResponse;
             })
             .catch(() => {
-                // Nếu không có mạng, lấy từ cache
                 return caches.match(event.request)
                     .then(cachedResponse => {
                         return cachedResponse || new Response('Offline and no cached resource available', { status: 503 });
@@ -89,6 +85,5 @@ self.addEventListener('activate', event => {
             );
         })
     );
-    // Đảm bảo client sử dụng service worker mới ngay lập tức
     self.clients.claim();
 });
