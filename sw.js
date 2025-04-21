@@ -30,7 +30,7 @@ const urlsToCache = [
     '/Phap Loa 1.mp3',
     '/Phap Loa 2.mp3',
     '/Nhac Dung Com.mp3',
-    '/guzheng nam mo a di da phat.mp3'
+    '/guzheng nam mo a di da phat.mp3',
 	'/Than Thoai.mp3'
 ];
 
