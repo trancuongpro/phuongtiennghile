@@ -173,14 +173,14 @@ body {
 	}
 
 .music-title {
-    font-size: 20px;
+    font-size: 18px;
     color: #00f;
 	font-weight: bold;
 }
 
 .music-controls {
     display: flex;
-    gap: 25px;
+    gap: 20px;
 }
 
 .music-control-button {

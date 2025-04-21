@@ -10,6 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
             id: 'audio-new-2',
             src: 'guzheng nam mo a di da phat.mp3',
             title: 'Guzheng Nam Mô A Di Phật'
+        },
+		{
+            id: 'audio-new-3',
+            src: 'Than Thoai.mp3',
+            title: 'Guitar Và Sáo "Thần Thoại"'
         }
     ];
 
