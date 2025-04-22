@@ -14,7 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
 		{
             id: 'audio-new-3',
             src: 'Than Thoai.mp3',
-            title: 'Guitar Và Sáo "Thần Thoại"'
+            title: 'Guitar Và Sáo Thần Thoại'
+        },
+		{
+            id: 'audio-new-4',
+            src: 'kiettuong.mp3',
+            title: 'Nhạc Thiền Kiết Tường'
         }
     ];
 

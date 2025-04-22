@@ -31,7 +31,8 @@ const urlsToCache = [
     '/Phap Loa 2.mp3',
     '/Nhac Dung Com.mp3',
     '/guzheng nam mo a di da phat.mp3',
-	'/Than Thoai.mp3'
+	'/Than Thoai.mp3',
+	'/kiettuong.mp3'
 ];
 
 self.addEventListener('install', event => {
