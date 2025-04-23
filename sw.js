@@ -1,46 +1,62 @@
 const CACHE_NAME = `audio-app-cache-${Date.now()}`;
+
+// Danh sách tài nguyên sử dụng đường dẫn tương đối
 const urlsToCache = [
-    '/phuongtiennghile/content.html',
-    '/phuongtiennghile/styles.css',
-    '/phuongtiennghile/script.js',
-    '/phuongtiennghile/audioLoopManager.js',
-    '/phuongtiennghile/clock.js',
-    '/phuongtiennghile/nhacmoi.js',
-    '/phuongtiennghile/favicon.png',
-    '/phuongtiennghile/Nen App.png',
-    '/phuongtiennghile/Button Chao.png',
-    '/phuongtiennghile/Button Chinh.png',
-    '/phuongtiennghile/Ba Hoi Bat Nha.mp3',
-    '/phuongtiennghile/Luu Thuy Cung Nghinh.mp3',
-    '/phuongtiennghile/Ngam Tho Hue.mp3',
-    '/phuongtiennghile/Rao Dan Bau.mp3',
-    '/phuongtiennghile/Rao Dan Nhi.mp3',
-    '/phuongtiennghile/Rao Tranh Sao.mp3',
-    '/phuongtiennghile/Nhac Thien 1.mp3',
-    '/phuongtiennghile/Nhac Thien 2.mp3',
-    '/phuongtiennghile/Quoc Ca.mp3',
-    '/phuongtiennghile/Dao Ca.mp3',
-    '/phuongtiennghile/Nhac Trao Hoa.mp3',
-    '/phuongtiennghile/Chuong Mat Niem.mp3',
-    '/phuongtiennghile/Nhac Niem Bon Su.mp3',
-    '/phuongtiennghile/Nhac Thien 3.mp3',
-    '/phuongtiennghile/Trong Tu Thinh.mp3',
-    '/phuongtiennghile/Phap Loa 1.mp3',
-    '/phuongtiennghile/Phap Loa 2.mp3',
-    '/phuongtiennghile/Nhac Dung Com.mp3',
-    '/phuongtiennghile/guzheng nam mo a di da phat.mp3',
-    '/phuongtiennghile/Than Thoai.mp3',
-    '/phuongtiennghile/kiettuong.mp3',
-    '/phuongtiennghile/doantinhduyenbantangchoai.mp3'
+    'content.html',
+    'styles.css',
+    'script.js',
+    'audioLoopManager.js',
+    'clock.js',
+    'nhacmoi.js',
+    'favicon.png',
+    'Nen App.png',
+    'Button Chao.png',
+    'Button Chinh.png',
+    'Ba Hoi Bat Nha.mp3',
+    'Luu Thuy Cung Nghinh.mp3',
+    'Ngam Tho Hue.mp3',
+    'Rao Dan Bau.mp3',
+    'Rao Dan Nhi.mp3',
+    'Rao Tranh Sao.mp3',
+    'Nhac Thien 1.mp3',
+    'Nhac Thien 2.mp3',
+    'Quoc Ca.mp3',
+    'Dao Ca.mp3',
+    'Nhac Trao Hoa.mp3',
+    'Chuong Mat Niem.mp3',
+    'Nhac Niem Bon Su.mp3',
+    'Nhac Thien 3.mp3',
+    'Trong Tu Thinh.mp3',
+    'Phap Loa 1.mp3',
+    'Phap Loa 2.mp3',
+    'Nhac Dung Com.mp3',
+    'guzheng nam mo a di da phat.mp3',
+    'Than Thoai.mp3',
+    'kiettuong.mp3',
+    'doantinhduyenbantangchoai.mp3'
 ];
 
+// Hàm thêm base path nếu cần
+const getBasePath = () => {
+    // Lấy base path từ scope của Service Worker
+    const scope = self.registration.scope;
+    const url = new URL(scope);
+    // Nếu scope chứa subpath (như /phuongtiennghile/), trả về subpath, nếu không thì trả về ''
+    return url.pathname === '/' ? '' : url.pathname;
+};
+
+// Sự kiện install: Cache các tài nguyên
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
                 console.log('Opened cache');
-                return Promise.all(
-                    urlsToCache.map(url => {
+                const basePath = getBasePath();
+                // Thêm base path vào các URL nếu cần
+                const urlsWithBasePath = urlsToCache.map(url => `${basePath}/${url}`.replace('//', '/'));
+                // Sử dụng Promise.allSettled để bỏ qua các tài nguyên lỗi
+                return Promise.allSettled(
+                    urlsWithBasePath.map(url => {
                         return fetch(url)
                             .then(response => {
                                 if (!response.ok) {
@@ -49,20 +65,29 @@ self.addEventListener('install', event => {
                                 return cache.put(url, response);
                             })
                             .catch(err => {
-                                console.error(`Error caching ${url}:`, err);
-                                throw err;
+                                console.warn(`Warning: Failed to cache ${url}:`, err);
+                                // Trả về null để Promise.allSettled không reject
+                                return null;
                             });
                     })
-                );
+                ).then(results => {
+                    // Kiểm tra xem có tài nguyên nào được cache thành công không
+                    const successfulCaches = results.filter(result => result.status === 'fulfilled' && result.value !== null);
+                    if (successfulCaches.length === 0) {
+                        throw new Error('No resources were cached successfully');
+                    }
+                    console.log(`Cached ${successfulCaches.length} out of ${urlsWithBasePath.length} resources`);
+                });
             })
             .catch(err => {
-                console.error('Cache addAll failed:', err);
+                console.error('Cache setup failed:', err);
                 throw err;
             })
     );
     self.skipWaiting();
 });
 
+// Sự kiện fetch: Phục vụ từ cache hoặc mạng
 self.addEventListener('fetch', event => {
     if (!event.request.url.startsWith('http')) {
         return;
@@ -92,6 +117,7 @@ self.addEventListener('fetch', event => {
     );
 });
 
+// Sự kiện activate: Xóa cache cũ
 self.addEventListener('activate', event => {
     event.waitUntil(
         caches.keys().then(cacheNames => {
