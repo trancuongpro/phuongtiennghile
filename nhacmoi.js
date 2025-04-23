@@ -20,6 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
             id: 'audio-new-4',
             src: 'kiettuong.mp3',
             title: 'Nhạc Thiền Kiết Tường'
+        },
+		{
+            id: 'audio-new-5',
+            src: 'doantinhduyenbantangchoai.mp3',
+            title: 'Đoạn Tình Duyên Ban Tặng Cho Ai'
         }
     ];
 

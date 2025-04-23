@@ -1,38 +1,39 @@
 const CACHE_NAME = `audio-app-cache-${Date.now()}`;
 const urlsToCache = [
-    '/phuongtiennghile/',
-    '/phuongtiennghile/index.html',
-    '/phuongtiennghile/content.html',
-    '/phuongtiennghile/styles.css',
-    '/phuongtiennghile/script.js',
-    '/phuongtiennghile/audioLoopManager.js',
-    '/phuongtiennghile/clock.js',
-    '/phuongtiennghile/nhacmoi.js',
-    '/phuongtiennghile/favicon.png',
-    '/phuongtiennghile/Nen App.png',
-    '/phuongtiennghile/Button Chao.png',
-    '/phuongtiennghile/Button Chinh.png',
-    '/phuongtiennghile/Ba Hoi Bat Nha.mp3',
-    '/phuongtiennghile/Luu Thuy Cung Nghinh.mp3',
-    '/phuongtiennghile/Ngam Tho Hue.mp3',
-    '/phuongtiennghile/Rao Dan Bau.mp3',
-    '/phuongtiennghile/Rao Dan Nhi.mp3',
-    '/phuongtiennghile/Rao Tranh Sao.mp3',
-    '/phuongtiennghile/Nhac Thien 1.mp3',
-    '/phuongtiennghile/Nhac Thien 2.mp3',
-    '/phuongtiennghile/Quoc Ca.mp3',
-    '/phuongtiennghile/Dao Ca.mp3',
-    '/phuongtiennghile/Nhac Trao Hoa.mp3',
-    '/phuongtiennghile/Chuong Mat Niem.mp3',
-    '/phuongtiennghile/Nhac Niem Bon Su.mp3',
-    '/phuongtiennghile/Nhac Thien 3.mp3',
-    '/phuongtiennghile/Trong Tu Thinh.mp3',
-    '/phuongtiennghile/Phap Loa 1.mp3',
-    '/phuongtiennghile/Phap Loa 2.mp3',
-    '/phuongtiennghile/Nhac Dung Com.mp3',
-    '/phuongtiennghile/guzheng nam mo a di da phat.mp3',
-    '/phuongtiennghile/Than Thoai.mp3',
-    '/phuongtiennghile/kiettuong.mp3'
+    '/',
+    '/index.html',
+    '/content.html',
+    '/styles.css',
+    '/script.js',
+    '/audioLoopManager.js',
+    '/clock.js',
+    '/nhacmoi.js',
+    '/favicon.png',
+    '/Nen App.png',
+    '/Button Chao.png',
+    '/Button Chinh.png',
+    '/Ba Hoi Bat Nha.mp3',
+    '/Luu Thuy Cung Nghinh.mp3',
+    '/Ngam Tho Hue.mp3',
+    '/Rao Dan Bau.mp3',
+    '/Rao Dan Nhi.mp3',
+    '/Rao Tranh Sao.mp3',
+    '/Nhac Thien 1.mp3',
+    '/Nhac Thien 2.mp3',
+    '/Quoc Ca.mp3',
+    '/Dao Ca.mp3',
+    '/Nhac Trao Hoa.mp3',
+    '/Chuong Mat Niem.mp3',
+    '/Nhac Niem Bon Su.mp3',
+    '/Nhac Thien 3.mp3',
+    '/Trong Tu Thinh.mp3',
+    '/Phap Loa 1.mp3',
+    '/Phap Loa 2.mp3',
+    '/Nhac Dung Com.mp3',
+    '/guzheng nam mo a di da phat.mp3',
+	'/Than Thoai.mp3',
+	'/kiettuong.mp3',
+	'/doantinhduyenbantangchoai.mp3'
 ];
 
 self.addEventListener('install', event => {
@@ -42,14 +43,9 @@ self.addEventListener('install', event => {
                 console.log('Opened cache');
                 return cache.addAll(urlsToCache);
             })
-            .catch(error => {
-                console.error('Cache addAll failed:', error);
-            })
     );
     self.skipWaiting();
 });
-
-// ... phần còn lại của mã giữ nguyên
 
 self.addEventListener('fetch', event => {
     if (!event.request.url.startsWith('http')) {
