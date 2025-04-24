@@ -25,6 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
             id: 'audio-new-5',
             src: 'doantinhduyenbantangchoai.mp3',
             title: 'Đoạn Tình Duyên Ban Tặng Cho Ai'
+        },
+		{
+            id: 'audio-new-6',
+            src: 'nhacbuddha.mp3',
+            title: 'Nhạc Phim Phật Buddha'
         }
     ];
 
