@@ -31,7 +31,8 @@ const urlsToCache = [
     '/phuongtiennghile/guzheng nam mo a di da phat.mp3',
     '/phuongtiennghile/Than Thoai.mp3',
     '/phuongtiennghile/kiettuong.mp3',
-    '/phuongtiennghile/doantinhduyenbantangchoai.mp3'
+    '/phuongtiennghile/doantinhduyenbantangchoai.mp3',
+	'/phuongtiennghile/nhacbuddha.mp3'
 ];
 
 self.addEventListener('install', event => {
