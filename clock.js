@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
         if (clockElement) {
-            clockElement.textContent = `Giờ Việt Nam: ${day} ${hours}:${minutes}:${seconds}`;
+            clockElement.textContent = `Trần Cường .Giờ Việt Nam: ${day} ${hours}:${minutes}:${seconds}`;
         }
     }
 
