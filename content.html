@@ -164,7 +164,7 @@
                 <div id="real-time-clock" class="real-time-clock"></div>
             </div>
             <div class="instructions">
-                Hướng Dẫn Sử Dụng: Chọn Nội Dung Với Công Việc Nhấn Vào Nếu Âm Thanh Lớn Thì Trượt Thanh Volume Theo Cảm Nhận Mỗi Người, Khi Chữ Đỏ Chớp Là Đang Phát, Nhấn lần Nữa Pause Là Chữ Xanh Dương, Giữ Yên 1 Giây Là Stop .......... Chúc Trải Nghiệm Vui Vẻ Với Ứng Dụng Web Của Trần Cường
+                Hướng Dẫn Sử Dụng: Chọn Nội Dung Với Công Việc Nhấn Vào Nếu Âm Thanh Lớn Thì Trượt Thanh Volume Theo Cảm Nhận Mỗi Người, Khi Chữ Đỏ Chớp Là Đang Phát, Nhấn lần Nữa Pause Là Chữ Xanh Dương, Giữ Yên 1 Giây Là Stop .......... Chúc Trải Nghiệm Vui Vẻ Với Ứng Dụng Web Của Trần Cường.
             </div>
         </div>
         <audio id="audio-1" src="Ba Hoi Bat Nha.mp3" preload="auto"></audio>
@@ -193,17 +193,18 @@
     </div>
     <script>
         if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/phuongtiennghile/sw.js')
-            .then(registration => {
-                console.log('Service Worker registered with scope:', registration.scope);
-            })
-            .catch(error => {
-                console.error('Service Worker registration failed:', error);
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.error('Service Worker registration failed:', error);
+                    });
             });
-    });
-}
+        }
     </script>
+	<script src="offline.js"></script>
     <script src="script.js"></script>
     <script src="audioLoopManager.js"></script>
     <script src="clock.js"></script>
