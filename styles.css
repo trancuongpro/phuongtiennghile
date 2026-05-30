@@ -46,6 +46,7 @@ body {
     background: url('Button Chao.png') no-repeat center/contain;
     border: none;
     cursor: pointer;
+	pointer-events: none;
 }
 
 .button-grid {
