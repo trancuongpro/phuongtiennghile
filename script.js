@@ -1,3 +1,6 @@
+/**
+ * script.js - Quản lý sự kiện giao diện nút bấm và âm thanh
+ */
 document.addEventListener('DOMContentLoaded', () => {
     // Lấy các nút và thanh volume
     const buttons = document.querySelectorAll('.chinh-button');
@@ -43,9 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function setupAudio(audio, audioId) {
+        if (!audio) return;
         audio.preload = 'auto'; // Tải trước file MP3
-        // Xóa sự kiện ended cũ để tránh xung đột
-        audio.removeEventListener('ended', () => {});
 
         if (audio.loop) {
             // Xử lý loop cho audio có thuộc tính loop
@@ -68,8 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (button) {
                     console.log(`Resetting button for ${audioId}`); // Debug log
                     button.classList.remove('playing', 'paused');
-                } else {
-                    console.warn(`Button for ${audioId} not found`); // Debug log
                 }
             });
         }
@@ -145,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.isPlaying = false;
                 } else {
                     console.log(`Play audio ${audioId}`); // Debug log
-                    // Phát audio hiện tại
                     if (Array.isArray(audio)) {
                         audio.forEach(a => a.play().catch(err => console.error('Lỗi phát audio:', err)));
                     } else {
@@ -159,33 +158,30 @@ document.addEventListener('DOMContentLoaded', () => {
             state.isHolding = false;
         };
 
-        // Sự kiện cho chuột
         button.addEventListener('mousedown', startPress);
         button.addEventListener('mouseup', endPress);
-
-        // Sự kiện cho cảm ứng
         button.addEventListener('touchstart', startPress);
         button.addEventListener('touchend', endPress);
-
-        // Ngăn sự kiện touchmove gây nhiễu
         button.addEventListener('touchmove', e => e.preventDefault());
     });
 
     // Nút Chao (phát audio-9: Quốc Ca)
-    chaoButton.addEventListener('click', () => {
-        const audioId = 'audio-9';
-        const audio = audios[audioId];
-        const state = audioStates[audioId];
+    if (chaoButton) {
+        chaoButton.addEventListener('click', () => {
+            const audioId = 'audio-9';
+            const audio = audios[audioId];
+            const state = audioStates[audioId];
 
-        if (state.isPlaying) {
-            console.log(`Stop audio-9 by Chao button`); // Debug log
-            audio.pause();
-            audio.currentTime = 0;
-            state.isPlaying = false;
-        } else {
-            console.log(`Play audio-9 by Chao button`); // Debug log
-            audio.play().catch(err => console.error('Lỗi phát audio:', err));
-            state.isPlaying = true;
-        }
-    });
+            if (state.isPlaying) {
+                console.log(`Stop audio-9 by Chao button`); // Debug log
+                audio.pause();
+                audio.currentTime = 0;
+                state.isPlaying = false;
+            } else {
+                console.log(`Play audio-9 by Chao button`); // Debug log
+                audio.play().catch(err => console.error('Lỗi phát audio:', err));
+                state.isPlaying = true;
+            }
+        });
+    }
 });

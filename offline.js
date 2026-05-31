@@ -1,5 +1,5 @@
 /**
- * offline.js (Bản cập nhật sửa lỗi DataError - Đồng bộ cấu trúc bảng)
+ * offline.js (Bản cập nhật tích hợp Service Worker đổi tên & Kiểm chứng dữ liệu)
  * Quản lý tải trước và lưu trữ nhạc MP3 vào IndexedDB phục vụ chạy Offline hoàn toàn.
  * Phát triển bởi: Trần Cường
  */
@@ -9,6 +9,15 @@
     const DB_VERSION = 2; // Nâng lên version 2 để buộc trình duyệt xóa cấu trúc cũ, tránh lỗi DataError
     const STORE_NAME = 'mp3_files';
     let db = null;
+
+    // Tự động đăng ký Service Worker với tên file mới: bo-dem-web.js
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./bo-dem-web.js')
+                .then(reg => console.log('[Service Worker] Đăng ký thành công với tên mới bo-dem-web.js. Scope:', reg.scope))
+                .catch(err => console.error('[Service Worker] Đăng ký thất bại với file bo-dem-web.js:', err));
+        });
+    }
 
     // 1. Thu thập tự động tất cả các file MP3 từ thẻ <audio> trong DOM
     function getAudioFilesList() {
@@ -120,6 +129,7 @@
 
             // Dùng Map để quản lý cache tạm thời các Blob URL trong phiên làm việc hiện tại, tránh tạo lập lặp lại
             const blobUrlCache = new Map();
+            let missingFilesCount = 0; // Biến đếm số file bị thiếu (do bị xóa cache)
 
             for (const item of audioList) {
                 const audioElement = document.getElementById(item.id);
@@ -142,6 +152,7 @@
                                 await saveFileToDB(normalizedUrl, cachedBlob);
                             } else {
                                 console.warn(`[OfflineDB] Đang mất mạng và không có bản lưu cho: ${item.url}`);
+                                missingFilesCount++; // Phát hiện file không có sẵn khi offline
                             }
                         } else {
                             console.log(`[OfflineDB] File đã có sẵn trong máy: ${item.url}`);
@@ -179,6 +190,12 @@
                     console.error(`[OfflineDB] Xử lý lỗi cho thẻ ${item.id} (${item.url}):`, fileError);
                 }
             }
+
+            // [HÀM KIỂM CHỨNG XÓA CACHE] Cảnh báo trực quan cho người dùng nếu dữ liệu IndexedDB trống rỗng
+            if (missingFilesCount > 0 && !navigator.onLine) {
+                alert(`⚠️ CẢNH BÁO OFFLINE:\nBộ nhớ máy phát hiện thiếu ${missingFilesCount} file âm thanh (có thể do bạn vừa xóa lịch sử/cache trình duyệt).\nVui lòng kết nối Internet trở lại và tải lại trang để hệ thống nạp lại file nhạc xuống máy.`);
+            }
+
             console.log('[OfflineDB] Hoàn tất tiến trình quét và tối ưu lưu trữ Offline.');
         } catch (globalError) {
             console.error('[OfflineDB] Lỗi hệ thống đồng bộ dữ liệu Offline:', globalError);
