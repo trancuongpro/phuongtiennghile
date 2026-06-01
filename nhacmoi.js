@@ -30,6 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
             id: 'audio-new-6',
             src: 'nhacbuddha.mp3',
             title: 'Nhạc Phim Phật Buddha'
+        },
+		{
+            id: 'audio-new-7',
+            src: 'luuthuyfestival.mp3',
+            title: 'Lưu Thủy Festival'
         }
     ];
 
