@@ -1,67 +1,51 @@
 /**
- * sw.js / bo-dem-web.js - Service Worker quản lý Cache giao diện Offline
+ * bo-dem-web.js - Quản lý bộ đệm khung ứng dụng (App Shell)
+ * Đảm bảo nạp trang web Nhạc Lễ Nam Bộ khi không có mạng internet.
  */
-
-const CACHE_NAME = 'app-shell-v2'; // Đổi tên version để trình duyệt xóa cache cũ, nhận cấu hình mới
-
-// Danh sách các file cốt lõi cần để hiển thị giao diện khi không có mạng
+const CACHE_NAME = 'nhac-le-nam-bo-v5';
 const ASSETS_TO_CACHE = [
     './',
-    './content.html',
-    './styles.css',
-    './favicon.png',
+    './index.html',
+    './style.css',
     './script.js',
     './goodoffline.js',
-    './audioLoopManager.js',
-    './clock.js',
-    './nhacmoi.js'
+    './button.png',
+    './nenchao.png'
 ];
 
-// 1. Cài đặt Service Worker và lưu các file giao diện vào Cache
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            console.log('[Service Worker] Đang cache khung ứng dụng...');
+// Cài đặt cấu hình lưu trữ giao diện
+self.addEventListener('install', (e) => {
+    e.waitUntil(
+        caches.open(CACHE_NAME).then(cache => {
+            console.log('[Service Worker] Đang nạp khung ứng dụng vào bộ đệm...');
             return cache.addAll(ASSETS_TO_CACHE);
         }).then(() => self.skipWaiting())
     );
 });
 
-// 2. Kích hoạt và dọn dẹp cache cũ nếu có thay đổi
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cache) => {
-                    if (cache !== CACHE_NAME) {
-                        console.log('[Service Worker] Đang dọn dẹp cache cũ:', cache);
-                        return caches.delete(cache);
-                    }
-                })
-            );
-        }).then(() => self.clients.claim())
+// Dọn dẹp cache cũ khi kích hoạt phiên bản mới
+self.addEventListener('activate', (e) => {
+    e.waitUntil(
+        caches.keys().then(keys => Promise.all(
+            keys.map(key => {
+                if (key !== CACHE_NAME) {
+                    console.log('[Service Worker] Đang dọn dẹp cache cũ:', key);
+                    return caches.delete(key);
+                }
+            })
+        )).then(() => self.clients.claim())
     );
 });
 
-// 3. Đánh chặn các yêu cầu mạng: Nếu mất mạng thì lấy từ Cache ra hiển thị
-self.addEventListener('fetch', (event) => {
-    const url = new URL(event.request.url);
+// Điều phối yêu cầu mạng khi người dùng F5 hoặc load trang offline
+self.addEventListener('fetch', (e) => {
+    const url = new URL(e.request.url);
+    // Bỏ qua không xử lý file nhạc .mp3 vì IndexedDB đã lo liệu tối ưu hơn
+    if (url.pathname.endsWith('.mp3')) return; 
 
-    // Bỏ qua không can thiệp vào các file MP3 (Vì file MP3 đã có hệ thống dữ liệu quản lý riêng trong IndexedDB)
-    if (url.pathname.endsWith('.mp3')) {
-        return;
-    }
-
-    event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-                // Trả về file từ Cache nếu có (giúp chạy khi offline)
-                return cachedResponse;
-            }
-            // Nếu không có trong cache thì tải từ mạng
-            return fetch(event.request).catch(() => {
-                console.error('[Service Worker] Thất bại khi tải tài nguyên mạng lúc offline:', event.request.url);
-            });
+    e.respondWith(
+        caches.match(e.request).then(res => {
+            return res || fetch(e.request);
         })
     );
 });
